@@ -1,0 +1,3 @@
+apis:
+  docs/swagger.yml:
+    alias: user-and-transaction-management-

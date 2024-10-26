@@ -1,0 +1,480 @@
+openapi: 3.0.0
+info:
+    title: Basic Bank System API
+    version: 1.0.0
+    description: API documentation for managing users, accounts, and transactions.
+
+servers:
+    - url: http://localhost:3000/api/v1
+tags:
+    - name: users
+      description: User management
+    - name: accounts
+      description: Bank account management
+    - name: transactions
+      description: Transaction management
+paths:
+    /users:
+        post:
+            tags:
+                - users
+            summary: Create a new user
+            description: Create a new user with associated profile data.
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/NewUser"
+            responses:
+                "201":
+                    description: User created successfully
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/User"
+                "400":
+                    description: Error creating user
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
+
+        get:
+            tags:
+                - users
+            summary: Get all users
+            description: Retrieve a list of all users with their profile data.
+            responses:
+                "200":
+                    description: A list of users
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/User"
+                "500":
+                    description: Error fetching users
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
+
+    /users/{userId}:
+        get:
+            tags:
+                - users
+            summary: Get a user by ID
+            description: Retrieve a user and their profile by user ID.
+            parameters:
+                - name: userId
+                  in: path
+                  required: true
+                  schema:
+                      type: integer
+                  description: The ID of the user to retrieve
+            responses:
+                "200":
+                    description: User found
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/User"
+                "404":
+                    description: User not found
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
+
+        put:
+            tags:
+                - users
+            summary: Update a user by ID
+            description: Update a user's email and password.
+            parameters:
+                - name: userId
+                  in: path
+                  required: true
+                  schema:
+                      type: integer
+                  description: The ID of the user to update
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/UpdateUser"
+            responses:
+                "200":
+                    description: User updated successfully
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/User"
+                "500":
+                    description: Error updating user
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
+
+    /accounts:
+        post:
+            tags:
+                - accounts
+            summary: Create a bank account for a user
+            description: Create a bank account associated with a user.
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/NewBankAccount"
+            responses:
+                "201":
+                    description: Bank account created successfully
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/BankAccount"
+                "400":
+                    description: Error creating bank account
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
+
+        get:
+            tags:
+                - accounts
+            summary: Get all bank accounts
+            description: Retrieve a list of all bank accounts.
+            responses:
+                "200":
+                    description: A list of bank accounts
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/BankAccount"
+                "500":
+                    description: Error fetching bank accounts
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
+
+    /accounts/{accountId}:
+        get:
+            tags:
+                - accounts
+            summary: Get a bank account by ID
+            description: Retrieve a bank account by its ID.
+            parameters:
+                - name: accountId
+                  in: path
+                  required: true
+                  schema:
+                      type: integer
+                  description: The ID of the account to retrieve
+            responses:
+                "200":
+                    description: Account found
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/BankAccount"
+                "404":
+                    description: Account not found
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
+
+    /transactions:
+        post:
+            tags:
+                - transactions
+            summary: Create a new transaction
+            description: Perform a transaction between two bank accounts.
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/NewTransaction"
+            responses:
+                "201":
+                    description: Transaction created successfully
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Transaction"
+                "400":
+                    description: Error creating transaction
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
+
+        get:
+            tags:
+                - transactions
+            summary: Get all transactions
+            description: Retrieve a list of all transactions.
+            responses:
+                "200":
+                    description: A list of transactions
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/Transaction"
+                "500":
+                    description: Error fetching transactions
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
+
+    /transactions/{transactionId}:
+        get:
+            tags:
+                - transactions
+            summary: Get a transaction by ID
+            description: Retrieve a transaction by its ID.
+            parameters:
+                - name: transactionId
+                  in: path
+                  required: true
+                  schema:
+                      type: integer
+                  description: The ID of the transaction to retrieve
+            responses:
+                "200":
+                    description: Transaction found
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Transaction"
+                "404":
+                    description: Transaction not found
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
+
+        delete:
+            tags:
+                - transactions
+            summary: Delete a transaction by ID
+            description: Delete a transaction from the system.
+            parameters:
+                - name: transactionId
+                  in: path
+                  required: true
+                  schema:
+                      type: integer
+                  description: The ID of the transaction to delete
+            responses:
+                "200":
+                    description: Transaction deleted successfully
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Transaction"
+                "500":
+                    description: Error deleting transaction
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+    schemas:
+        User:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    example: 1
+                name:
+                    type: string
+                    example: "John Doe"
+                email:
+                    type: string
+                    example: "john@mail.com"
+                password:
+                    type: string
+                    example: "password"
+                profile:
+                    $ref: "#/components/schemas/Profile"
+
+        NewUser:
+            type: object
+            required:
+                - name
+                - email
+                - password
+                - profile
+            properties:
+                name:
+                    type: string
+                    example: "John Doe"
+                email:
+                    type: string
+                    example: "john@mail.com"
+                password:
+                    type: string
+                    example: "password"
+                profile:
+                    $ref: "#/components/schemas/NewProfile"
+            example:
+                name: "John Doe"
+                email: "john@mail.com"
+                password: "password"
+                profile:
+                    identity_type: "KTP"
+                    identity_number: "1234567890"
+                    address: "Surabaya"
+
+        UpdateUser:
+            type: object
+            properties:
+                email:
+                    type: string
+                    example: "newemail@mail.com"
+                password:
+                    type: string
+                    example: "newpassword"
+            example:
+                email: "newemail@mail.com"
+                password: "newpassword"
+
+        Profile:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    example: 1
+                identity_type:
+                    type: string
+                    example: "KTP"
+                identity_number:
+                    type: string
+                    example: "1234567890"
+                address:
+                    type: string
+                    example: "Surabaya"
+
+        NewProfile:
+            type: object
+            required:
+                - identity_type
+                - identity_number
+                - address
+            properties:
+                identity_type:
+                    type: string
+                    example: "KTP"
+                identity_number:
+                    type: string
+                    example: "1234567890"
+                address:
+                    type: string
+                    example: "Surabaya"
+            example:
+                identity_type: "KTP"
+                identity_number: "1234567890"
+                address: "Surabaya"
+
+        BankAccount:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    example: 1
+                userId:
+                    type: integer
+                    example: 1
+                bank_name:
+                    type: string
+                    example: "Bank A"
+                bank_account_number:
+                    type: string
+                    example: "101101"
+                balance:
+                    type: number
+                    example: 500000
+
+        NewBankAccount:
+            type: object
+            required:
+                - userId
+                - bank_name
+                - bank_account_number
+                - balance
+            properties:
+                userId:
+                    type: integer
+                    example: 1
+                bank_name:
+                    type: string
+                    example: "Bank A"
+                bank_account_number:
+                    type: string
+                    example: "101101"
+                balance:
+                    type: number
+                    example: 500000
+            example:
+                userId: 1
+                bank_name: "Bank A"
+                bank_account_number: "101101"
+                balance: 500000
+
+        Transaction:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    example: 1
+                amount:
+                    type: number
+                    example: 50000
+                sourceAccount:
+                    $ref: "#/components/schemas/BankAccount"
+                destinationAccount:
+                    $ref: "#/components/schemas/BankAccount"
+
+        NewTransaction:
+            type: object
+            required:
+                - sourceAccountNumber
+                - destinationAccountNumber
+                - amount
+            properties:
+                sourceAccountNumber:
+                    type: string
+                    example: "102102"
+                destinationAccountNumber:
+                    type: string
+                    example: "101101"
+                amount:
+                    type: number
+                    example: 50000
+            example:
+                sourceAccountNumber: "102102"
+                destinationAccountNumber: "101101"
+                amount: 50000
+
+        ErrorResponse:
+            type: object
+            properties:
+                error:
+                    type: string
+                    example: "Error creating user"
