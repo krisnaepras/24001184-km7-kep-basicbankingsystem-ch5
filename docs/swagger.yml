@@ -54,7 +54,7 @@ paths:
                                 type: array
                                 items:
                                     $ref: "#/components/schemas/User"
-                "500":
+                "400":
                     description: Error fetching users
                     content:
                         application/json:
@@ -113,7 +113,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: "#/components/schemas/User"
-                "500":
+                "400":
                     description: Error updating user
                     content:
                         application/json:
@@ -160,7 +160,7 @@ paths:
                                 type: array
                                 items:
                                     $ref: "#/components/schemas/BankAccount"
-                "500":
+                "400":
                     description: Error fetching bank accounts
                     content:
                         application/json:
@@ -234,7 +234,7 @@ paths:
                                 type: array
                                 items:
                                     $ref: "#/components/schemas/Transaction"
-                "500":
+                "400":
                     description: Error fetching transactions
                     content:
                         application/json:
@@ -287,7 +287,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: "#/components/schemas/Transaction"
-                "500":
+                "400":
                     description: Error deleting transaction
                     content:
                         application/json:

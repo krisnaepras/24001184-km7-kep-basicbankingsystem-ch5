@@ -1,8 +1,8 @@
 const express = require("express");
-const transactionController = require("../controllers/transactionController");
+const TransactionController = require("../controllers/transactionController");
 const router = express.Router();
 
-router.post("/", transactionController.createTransaction);
+router.post("/", TransactionController.createTransaction);
 /*
 {
   "sourceAccountNumber": "102102",
@@ -11,11 +11,11 @@ router.post("/", transactionController.createTransaction);
 }
 */
 
-router.get("/", transactionController.getTransactions);
+router.get("/", TransactionController.getTransactions);
 
-router.get("/:transactionId", transactionController.getTransactionById);
+router.get("/:transactionId", TransactionController.getTransactionById);
 
-router.delete("/:transactionId", transactionController.destroyTransactionById);
+router.delete("/:transactionId", TransactionController.destroyTransactionById);
 
 
 module.exports = router;

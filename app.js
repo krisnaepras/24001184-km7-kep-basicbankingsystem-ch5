@@ -12,6 +12,7 @@ const swaggerDocument = YAML.load(path.join(__dirname, "./docs/swagger.yml"));
 
 const app = express();
 app.use(bodyParser.json());
+
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use("/api/v1/users", userRoutes);

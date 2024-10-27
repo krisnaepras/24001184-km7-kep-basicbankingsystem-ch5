@@ -1,8 +1,8 @@
 const express = require("express");
-const accountController = require("../controllers/accountController");
+const AccountController = require("../controllers/accountController");
 const router = express.Router();
 
-router.post("/", accountController.createAccount);
+router.post("/", AccountController.createAccount);
 /*
 {
   "userId": 1,
@@ -18,8 +18,8 @@ router.post("/", accountController.createAccount);
 }
 */
 
-router.get("/", accountController.getAccounts);
+router.get("/", AccountController.getAccounts);
 
-router.get("/:accountId", accountController.getAccountById);
+router.get("/:accountId", AccountController.getAccountById);
 
 module.exports = router;

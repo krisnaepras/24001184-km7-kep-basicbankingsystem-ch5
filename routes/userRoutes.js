@@ -1,8 +1,8 @@
 const express = require("express");
-const userController = require("../controllers/userController");
+const UserController = require("../controllers/userController");
 const router = express.Router();
 
-router.post("/", userController.createUser);
+router.post("/", UserController.createUser);
 /*
 {
   "name": "John Doe",
@@ -16,11 +16,11 @@ router.post("/", userController.createUser);
 }
 */
 
-router.get("/", userController.getUsers);
+router.get("/", UserController.getUsers);
 
-router.get("/:userId", userController.getUserById);
+router.get("/:userId", UserController.getUserById);
 
-router.put("/:userId", userController.updateUserById);
+router.put("/:userId", UserController.updateUserById);
 /*
 {
     "email": "newemail@mail.com",
