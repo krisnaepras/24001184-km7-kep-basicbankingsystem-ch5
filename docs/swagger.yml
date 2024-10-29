@@ -6,7 +6,10 @@ info:
 
 servers:
     - url: http://localhost:3000/api/v1
+
 tags:
+    - name: authentication
+      description: User authentication
     - name: users
       description: User management
     - name: accounts
@@ -14,6 +17,107 @@ tags:
     - name: transactions
       description: Transaction management
 paths:
+    /auth/register:
+        post:
+            tags:
+                - authentication
+            summary: Register new user
+            description: Create a new user account
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/Register"
+
+            responses:
+                "201":
+                    description: User created successfully
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    message:
+                                        type: string
+                                    data:
+                                        type: object
+                                        properties:
+                                            id:
+                                                type: integer
+                                            name:
+                                                type: string
+                                            email:
+                                                type: string
+                "400":
+                    description: Error creating user
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+
+    /auth/login:
+        post:
+            tags:
+                - authentication
+            summary: Login user
+            description: Authenticate user and get token
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/Login"
+            responses:
+                "200":
+                    description: Login successful
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    token:
+                                        type: string
+                "400":
+                    description: Error logging in
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+
+    /auth/authenticate:
+        get:
+            tags:
+                - authentication
+            summary: Verify authentication
+            description: Verify if user is authenticated
+            security:
+                - BearerAuth: []
+            responses:
+                "200":
+                    description: Successfully authenticated
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    message:
+                                        type: string
+                "401":
+                    description: Unauthorized
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
     /users:
         post:
             tags:
@@ -295,7 +399,42 @@ paths:
                                 $ref: "#/components/schemas/ErrorResponse"
 
 components:
+    securitySchemes:
+        BearerAuth:
+            type: http
+            scheme: bearer
+            bearerFormat: JWT
     schemas:
+        Register:
+            type: object
+            required:
+                - name
+                - email
+                - password
+            properties:
+                name:
+                    type: string
+                    example: "John Doe"
+                email:
+                    type: string
+                    example: "johnn@mail.com"
+                password:
+                    type: string
+                    example: "password"
+        Login:
+            type: object
+            required:
+                - email
+                - password
+            properties:
+                email:
+                    type: string
+                    example: johnn@mail.com
+                    format: email
+                password:
+                    type: string
+                    example: password
+                    format: password
         User:
             type: object
             properties:
