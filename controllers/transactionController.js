@@ -53,7 +53,7 @@ class TransactionController {
     
             res.status(201).json(transaction);
         } catch (error) {
-            console.error(error);
+            // console.error(error);
             res.status(400).json({ error: "Error creating transaction" });
         }
     }
@@ -68,7 +68,7 @@ class TransactionController {
             });
             res.status(200).json(transactions);
         } catch (error) {
-            console.error(error);
+            // console.error(error);
             res.status(400).json({ error: "Error fetching transaction" });
         }
     }
@@ -88,7 +88,7 @@ class TransactionController {
             }
             res.status(200).json(transaction);
         } catch (error) {
-            console.error(error);
+            // console.error(error);
             res.status(400).json({ error: "Error fetching transaction details" });
         }
     }
@@ -106,7 +106,7 @@ class TransactionController {
                 deletedTransaction,
             });
         } catch (error) {
-            console.error(error);
+            // console.error(error);
             res.status(400).json({
                 error: "Error deleting transaction or transaction not found",
             });

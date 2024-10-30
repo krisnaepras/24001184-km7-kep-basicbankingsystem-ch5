@@ -27,7 +27,7 @@ class AuthController {
                 data: user,
             });
         } catch (error) {
-            console.error(error);
+            // console.error(error);
             res.status(400).json({ error: "Error creating user" });
         }
     }
@@ -38,7 +38,7 @@ class AuthController {
             const user = await prisma.user.findUnique({
                 where: { email },
             });
-      
+
             const isPasswordMatch = await bcrypt.compare(
                 password,
                 user.password
@@ -51,9 +51,11 @@ class AuthController {
             }
 
             const token = jwt.sign(user, process.env.JWT_SECRET_KEY);
-            return res.status(200).json({ token });
+            return res.status(200).json({
+                token,
+            });
         } catch (error) {
-            console.error(error);
+            // console.error(error);
             res.status(400).json({ error: "Error logging in" });
         }
     }

@@ -98,7 +98,7 @@ paths:
             summary: Verify authentication
             description: Verify if user is authenticated
             security:
-                - BearerAuth: []
+                - bearerAuth: []
             responses:
                 "200":
                     description: Successfully authenticated
@@ -400,7 +400,7 @@ paths:
 
 components:
     securitySchemes:
-        BearerAuth:
+        bearerAuth:
             type: http
             scheme: bearer
             bearerFormat: JWT

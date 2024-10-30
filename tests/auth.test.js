@@ -1,103 +1,131 @@
 const request = require("supertest");
-const app = require("../app"); 
+const app = require("../app");
 const prisma = require("../models/prismaClients");
-const jwt = require("jsonwebtoken");
-require("dotenv").config();
 
-let token;
+beforeAll(async () => {
+    await prisma.transaction.deleteMany();
+    await prisma.bankAccount.deleteMany();
+    await prisma.profile.deleteMany();
+    await prisma.user.deleteMany();
+});
 
-describe("Auth API Integration Tests", () => {
-    beforeAll(async () => {
-        await prisma.user.deleteMany();
-    });
+afterAll(async () => {
+    await prisma.$disconnect();
+});
 
-    afterAll(async () => {
-        await prisma.user.deleteMany();
-        await prisma.$disconnect();
-    });
+describe("Authentication Tests", () => {
+    const userCredentials = {
+        name: "Test User",
+        email: "test@example.com",
+        password: "TestPassword123",
+    };
 
     describe("POST /api/v1/auth/register", () => {
-        it("should register a new user", async () => {
+        test("Successful Registration", async () => {
             const response = await request(app)
                 .post("/api/v1/auth/register")
-                .send({
-                    name: "Test User",
-                    email: "testuser@example.com",
-                    password: "password123",
-                });
+                .send(userCredentials);
 
-            expect(response.status).toBe(201);
+            expect(response.statusCode).toBe(201);
             expect(response.body.message).toBe("User created successfully");
             expect(response.body.data).toHaveProperty("id");
-            expect(response.body.data).toHaveProperty("email", "testuser@example.com");
+            expect(response.body.data.email).toBe(userCredentials.email);
         });
 
-        it("should return error if email already exists", async () => {
+        test("Email Already Exists", async () => {
             const response = await request(app)
                 .post("/api/v1/auth/register")
-                .send({
-                    name: "Test User",
-                    email: "testuser@example.com",
-                    password: "password123",
-                });
+                .send(userCredentials);
 
-            expect(response.status).toBe(400);
-            expect(response.body).toHaveProperty("error", "Email already exists");
+            expect(response.statusCode).toBe(400);
+            expect(response.body.error).toBe("Email already exists");
+        });
+
+        test("Invalid Input - Missing Fields", async () => {
+            const response = await request(app)
+                .post("/api/v1/auth/register")
+                .send({ name: "Incomplete User" });
+
+            expect(response.statusCode).toBe(400);
+            expect(response.body.error).toBe("Error creating user");
         });
     });
 
     describe("POST /api/v1/auth/login", () => {
-        it("should login an existing user and return a JWT token", async () => {
+        test("Successful Login", async () => {
             const response = await request(app)
                 .post("/api/v1/auth/login")
                 .send({
-                    email: "testuser@example.com",
-                    password: "password123",
+                    email: userCredentials.email,
+                    password: userCredentials.password,
                 });
 
-            expect(response.status).toBe(200);
+            expect(response.statusCode).toBe(200);
             expect(response.body).toHaveProperty("token");
-            token = response.body.token;
         });
 
-        it("should return error for invalid credentials", async () => {
+        test("Incorrect Password", async () => {
             const response = await request(app)
                 .post("/api/v1/auth/login")
                 .send({
-                    email: "testuser@example.com",
-                    password: "wrongpassword",
+                    email: userCredentials.email,
+                    password: "WrongPassword",
                 });
 
-            expect(response.status).toBe(400);
-            expect(response.body).toHaveProperty("error", "User or Password not found");
+            expect(response.statusCode).toBe(400);
+            expect(response.body.error).toBe("User or Password not found");
+        });
+
+        test("User Not Found", async () => {
+            const response = await request(app)
+                .post("/api/v1/auth/login")
+                .send({
+                    email: "nonexistent@example.com",
+                    password: "AnyPassword",
+                });
+
+            expect(response.statusCode).toBe(400);
+            expect(response.body.error).toBe("Error logging in");
         });
     });
 
     describe("GET /api/v1/auth/authenticate", () => {
-        it("should return success for authenticated user", async () => {
-            const response = await request(app)
-                .get("/api/v1/auth/authenticate")
-                .set("Authorization", token);
+        test("Authentication Successful", async () => {
+            const loginResponse = await request(app)
+                .post("/api/v1/auth/login")
+                .send({
+                    email: userCredentials.email,
+                    password: userCredentials.password,
+                });
 
-            expect(response.status).toBe(200);
-            expect(response.body).toHaveProperty("message", "Berhasil masuk");
+            const token = loginResponse.body.token;
+
+            const authResponse = await request(app)
+                .get("/api/v1/auth/authenticate")
+                .set("Authorization", `Bearer ${token}`);
+
+            expect(authResponse.statusCode).toBe(200);
+            expect(authResponse.body.message).toBe("Berhasil masuk");
         });
 
-        it("should return 401 if no token is provided", async () => {
-            const response = await request(app)
-                .get("/api/v1/auth/authenticate");
+        test("Missing Token", async () => {
+            const response = await request(app).get(
+                "/api/v1/auth/authenticate"
+            );
 
-            expect(response.status).toBe(401);
-            expect(response.body).toHaveProperty("error", "You must be logged in to access this route");
+            expect(response.statusCode).toBe(401);
+            expect(response.body.error).toBe(
+                "You must be logged in to access this route"
+            );
         });
 
-        it("should return 403 if an invalid token is provided", async () => {
+        test("Invalid Token", async () => {
             const response = await request(app)
                 .get("/api/v1/auth/authenticate")
-                .set("Authorization", "invalidtoken");
+                .set("Authorization", "Bearer invalidtoken");
 
-            expect(response.status).toBe(403);
-            expect(response.body).toHaveProperty("error", "You are not authoried");
+            expect(response.statusCode).toBe(403);
+            expect(response.body.error).toBe("You are not authoried");
         });
     });
 });

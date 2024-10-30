@@ -1,6 +1,5 @@
 const prisma = require("../models/prismaClients");
 
-
 class UserController {
     static async createUser(req, res) {
         const { name, email, password, profile } = req.body;
@@ -14,10 +13,11 @@ class UserController {
                         create: profile,
                     },
                 },
+                include: { profile: true },
             });
             res.status(201).json(newUser);
         } catch (error) {
-            console.error(error);
+            // console.error(error);
             res.status(400).json({ error: "Error creating user" });
         }
     }
@@ -29,7 +29,7 @@ class UserController {
             });
             res.status(200).json(users);
         } catch (error) {
-            console.error(error);
+            // console.error(error);
             res.status(400).json({ error: "Error fetching users" });
         }
     }
@@ -48,7 +48,7 @@ class UserController {
 
             res.status(200).json(user);
         } catch (error) {
-            console.error(error);
+            // console.error(error);
             res.status(400).json({ error: "Error fetching user details" });
         }
     }
@@ -58,13 +58,19 @@ class UserController {
         const { email, password } = req.body;
 
         try {
+            const user = await prisma.user.findUnique({
+                where: { id: parseInt(userId) },
+            });
+
+            if (!user) {
+                return res.status(404).json({ error: "User not found" });
+            }
+
             const updateUser = await prisma.user.update({
                 where: { id: parseInt(userId) },
-                data: {
-                    email,
-                    password,
-                },
+                data: { email, password },
             });
+
             res.status(200).json({
                 message: "User updated successfully",
                 updateUser,
@@ -72,7 +78,7 @@ class UserController {
         } catch (error) {
             console.log(error);
             res.status(400).json({
-                error: "Error updating user or user not found",
+                error: "Error updating user",
             });
         }
     }

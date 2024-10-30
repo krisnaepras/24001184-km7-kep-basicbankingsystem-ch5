@@ -31,8 +31,11 @@ app.use("/api/v1/accounts", accountRouter);
 app.use("/api/v1/transactions", transactionRouter);
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server berjalan di port ${PORT}`);
-});
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(PORT, () => {
+        console.log(`Server berjalan di port ${PORT}`);
+    });
+}
+
 
 module.exports = app;
